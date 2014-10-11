@@ -1,0 +1,12 @@
+FROM ubuntussh:14.04
+MAINTAINER ksasan@rediffmail.com
+
+RUN apt-get update && apt-get install -y supervisor
+#RUN apt-get update && apt-get install -y openssh-server apache2 supervisor
+
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+EXPOSE 22
+#EXPOSE 22 80
+CMD ["/usr/bin/supervisord"]
+
