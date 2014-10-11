@@ -1,8 +1,5 @@
 #!/bin/sh
 
-counter=1
-numberhosts=7
-hostname=dkrctrhost
 ctrname=dkrctrnm
 numberctrs=`docker ps -a | grep $ctrname | tr -s " " | cut -d " " -f 1 | wc -l`
 ctrlist=`docker ps -a | grep $ctrname | tr -s " " | cut -d " " -f 1`
