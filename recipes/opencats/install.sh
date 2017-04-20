@@ -29,7 +29,6 @@ mysql -u root --execute="GRANT ALL PRIVILEGES ON cats_dev.* TO 'cats'@'localhost
 cd /var/www/html
 wget https://github.com/opencats/OpenCATS/archive/0.9.3-3.tar.gz
 tar -xvzf 0.9.3-3.tar.gz
-rm 0.9.3-3.tar.gz
 mv OpenCATS-0.9.3-3 opencats
 cd /var/www/html/opencats
 
