@@ -68,49 +68,16 @@ RUN cd /var/www			\
 # Ruby related setup
 # --------------------
 RUN curl -L https://get.rvm.io | bash -s stable --autolibs=enabled
-RUN source /etc/profile.d/rvm.sh		\
-	&& rvm install ruby-1.8.7		\
-	&& rvm use ruby-1.8.7 --default 	\
-	&& cd /var/www/virtualx			\
-	&& gem install gemset			\
-	&& gem install bundle			\
-	&& bundle install			\
-	&& gem install rails --version 3.0.3	\
-	&& cp /var/www/virtualx/config/database.yml.example /var/www/virtualx/config/database.yml \
-	&& sed -i -re 's/\r//g ; s/host:\s*localhost/host: db/g ; s/database:.*/database: virtx/ ; s/username:.*/username: virtx/ ; s/passwd:.*/passwd: virtx/;' config/database.yml 
-
-# --------------------
-# SQL setup
-# --------------------
-RUN echo "										\
-	DROP DATABASE IF EXISTS virtx ;							\
-	CREATE DATABASE virtx CHARACTER SET utf8 COLLATE utf8_bin;			\
-	CREATE USER 'virtx'@'%' IDENTIFIED BY 'virtx' ;					\
-	GRANT ALL ON virtx.* TO virtx@'%' IDENTIFIED BY 'virtx' WITH GRANT OPTION;	\
-	FLUSH PRIVILEGES ;" >> /tmp/setupDatabase.sql
-#mysql -u $virtx -p$virtx -h ${dbHost}
-
-# -----------------------------------------------
-# Content to be run after linkage to database 
-# -----------------------------------------------
-RUN echo "rake db:create RAILS_ENV=production	\
-	&& rake db:migrate RAILS_ENV=production \
-	&& rake db:seed RAILS_ENV=production	>> /tmp/populateData.sh
-
-
-# -----------------------------------------------
-# Setup other important components (WSGI related)
-# -----------------------------------------------
-RUN gem install passenger		\
-	&& passenger-install-apache2-module " 
-
-#RUN source /home/${username}/.rvm/scripts/rvm	\
-#    source /usr/local/rvm/bin/rvmrc		\
-#RUN  echo "LoadModule passenger_module /home/user/.rvm/gems/ruby-1.8.7-head/gems/passenger-5.1.5/buildout/apache2/mod_passenger.so
-#   <IfModule mod_passenger.c>
-#     PassengerRoot /home/user/.rvm/gems/ruby-1.8.7-head/gems/passenger-5.1.5
-#     PassengerDefaultRuby /home/user/.rvm/gems/ruby-1.8.7-head/wrappers/ruby
-#   </IfModule> " >> /etc/apache2/apache2.conf
+#RUN source /etc/profile.d/rvm.sh		\
+#	&& rvm install ruby-1.8.7		\
+#	&& rvm use ruby-1.8.7 --default 	\
+#	&& cd /var/www/virtualx			\
+#	&& gem install gemset			\
+#	&& gem install bundle			\
+#	&& bundle install			\
+#	&& gem install rails --version 3.0.3	\
+#	&& cp /var/www/virtualx/config/database.yml.example /var/www/virtualx/config/database.yml \
+#	&& sed -i -re 's/\r//g ; s/host:\s*localhost/host: db/g ; s/database:.*/database: virtx/ ; s/username:.*/username: virtx/ ; s/passwd:.*/passwd: virtx/;' config/database.yml 
 
 RUN sudo service apache2 restart
 
@@ -121,12 +88,8 @@ RUN sudo service apache2 restart
 EXPOSE 80 
 EXPOSE 22 
 
-#stuff for mysql
-COPY ./mysql.sh /opt/mysql.sh  
-
 CMD ["/usr/bin/supervisord"]
 
 # -------------------------------------------------------------------------------
 # Junk  / to be discarded
 # -------------------------------------------------------------------------------
-#	&& sed -i 's/bind-address.\+/bind-address=0.0.0.0/' /etc/mysql/my.cnf 			\
