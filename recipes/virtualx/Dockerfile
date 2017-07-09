@@ -28,8 +28,6 @@ RUN sudo sed -i -re 's/([a-z]{2}\.)?archive.ubuntu.com|security.ubuntu.com/old-r
 RUN apt-get update && apt-get install -y openssh-server supervisor vim	\
 && COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-#RUN cat /file/That/Doesnot/Exists || exit 		# FOR EXIT
-
 # ---------------------------------------------------------------------------
 # Setup User
 # ---------------------------------------------------------------------------
@@ -74,8 +72,12 @@ RUN source /etc/profile.d/rvm.sh		\
 	&& rvm install ruby-1.8.7		\
 	&& rvm use ruby-1.8.7 --default 	\
 	&& cd /var/www/virtualx			\
+	&& gem install gemset			\
+	&& gem install bundle			\
 	&& bundle install			\
 	&& gem install rails --version 3.0.3	\
+	&& cp /var/www/virtualx/config/database.yml.example /var/www/virtualx/config/database.yml \
+	&& sed -i -re 's/\r//g ; s/host:\s*localhost/host: db/g ; s/database:.*/database: virtx/ ; s/username:.*/username: virtx/ ; s/passwd:.*/passwd: virtx/;' config/database.yml 		 	\
 	&& rake db:create RAILS_ENV=production	\
 	&& rake db:migrate RAILS_ENV=production \
 	&& rake db:seed RAILS_ENV=production	\
@@ -103,3 +105,12 @@ EXPOSE 22
 COPY ./mysql.sh /opt/mysql.sh  
 
 CMD ["/usr/bin/supervisord"]
+
+# -------------------------------------------------------------------------------
+# JUNK
+# -------------------------------------------------------------------------------
+#	&& sed -i -re 's/\r//' config/database.yml \
+#	&& sed -i -re 's/host:\s*localhost/host: db/' config/database.yml \
+#	&& sed -i -re 's/database:.*/database: virtx/' config/database.yml \
+#	&& sed -i -re 's/username:.*/username: virtx/' config/database.yml \
+#	&& sed -i -re 's/passwd:.*/passwd: virtx/' config/database.yml \
