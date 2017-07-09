@@ -1,0 +1,33 @@
+virtualx:
+    container_name: virtualx
+    build: .
+    #image: sasan/ubuntu14:virtx_v01
+    ports:
+        - 8888:80
+    links:
+        - mysql:db
+
+mysql:
+    container_name: mysqlserver
+    image: mysql:5.5
+    ports:
+        - 3306:3306
+    volumes:
+        - /var/lib/mysql
+    environment:
+        MYSQL_ROOT_PASSWORD: toor
+        MYSQL_DATABASE: virtx
+        MYSQL_USER: virtx
+        MYSQL_PASSWORD: virtx
+
+phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    ports:
+        - 8080:80
+    links:
+        - mysql:db
+    environment:
+        PMA_HOST: db
+        PMA_USER: virtx
+        PMA_PASSWORD: virtx
