@@ -1,7 +1,6 @@
-virtualx:
-    container_name: virtualx
+virtx:
+    container_name: virtx
     build: .
-    #image: sasan/ubuntu14:virtx_v01
     ports:
         - 8888:80
     links:
