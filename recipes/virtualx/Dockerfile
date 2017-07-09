@@ -9,8 +9,12 @@ MAINTAINER Khelender Sasan "ksasan@gmail.com"
 # ---------------------------------------------------------------------------
 ARG username=user
 ARG passwd=pass
+ARG virtx=virtx
+ARG dbHost=db
 ENV username=$username
 ENV passwd=$passwd
+ENV virtx=$virtx
+ENV dbHost=$dbHost
 
 RUN export LANGUAGE=en_US.UTF-8         \
         && export LANG=en_US.UTF-8      \
@@ -58,11 +62,13 @@ RUN sudo apt-get install -y build-essential bison openssl libreadline5 curl git 
 # SQL setup
 # --------------------
 RUN echo "										\
+	DROP DATABASE IF EXISTS virtx ;							\
 	CREATE DATABASE virtx CHARACTER SET utf8 COLLATE utf8_bin;			\
 	CREATE USER 'virtx'@'%' IDENTIFIED BY 'virtx' ;					\
 	GRANT ALL ON 'virtx'.* TO virtx@'%' IDENTIFIED BY 'virtx' WITH GRANT OPTION;	\
 	GRANT ALL ON *.* TO root@'%' IDENTIFIED BY 'toor' WITH GRANT OPTION; 		\
-	FLUSH PRIVILEGES" | mysql
+	FLUSH PRIVILEGES ;								\
+	EXIT;" | mysql -u $virtx -p$virtx -h ${dbHost}
 
 # --------------------
 # Ruby related setup
