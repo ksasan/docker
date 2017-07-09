@@ -58,6 +58,11 @@ RUN sudo apt-get install -y build-essential bison openssl libreadline5 curl git 
  libruby1.8 libmysql-ruby1.8 libcurl4-gnutls-dev	\
  apache2-dev apache2 mysql-client
 
+COPY ./virtualx.tgz /var/www
+RUN cd /var/www			\
+  && tar zxf virtualx.tgz	\
+  && rm virtualx.tgz
+
 # --------------------
 # SQL setup
 # --------------------
@@ -111,10 +116,3 @@ COPY ./mysql.sh /opt/mysql.sh
 CMD ["/usr/bin/supervisord"]
 
 # -------------------------------------------------------------------------------
-# JUNK
-# -------------------------------------------------------------------------------
-#	&& sed -i -re 's/\r//' config/database.yml \
-#	&& sed -i -re 's/host:\s*localhost/host: db/' config/database.yml \
-#	&& sed -i -re 's/database:.*/database: virtx/' config/database.yml \
-#	&& sed -i -re 's/username:.*/username: virtx/' config/database.yml \
-#	&& sed -i -re 's/passwd:.*/passwd: virtx/' config/database.yml \
