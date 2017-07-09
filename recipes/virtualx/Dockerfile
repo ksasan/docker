@@ -65,10 +65,8 @@ RUN echo "										\
 	DROP DATABASE IF EXISTS virtx ;							\
 	CREATE DATABASE virtx CHARACTER SET utf8 COLLATE utf8_bin;			\
 	CREATE USER 'virtx'@'%' IDENTIFIED BY 'virtx' ;					\
-	GRANT ALL ON 'virtx'.* TO virtx@'%' IDENTIFIED BY 'virtx' WITH GRANT OPTION;	\
-	GRANT ALL ON *.* TO root@'%' IDENTIFIED BY 'toor' WITH GRANT OPTION; 		\
-	FLUSH PRIVILEGES ;								\
-	EXIT;" | mysql -u $virtx -p$virtx -h ${dbHost}
+	GRANT ALL ON virtx.* TO virtx@'%' IDENTIFIED BY 'virtx' WITH GRANT OPTION;	\
+	FLUSH PRIVILEGES ;" | mysql -u $virtx -p$virtx -h ${dbHost}
 
 # --------------------
 # Ruby related setup
