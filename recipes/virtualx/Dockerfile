@@ -90,7 +90,7 @@ ADD ./mysql.sh /opt/mysql.sh
 # -----------------------------------------------
 SHELL	["/bin/bash", "-c"]
 RUN	cp /var/www/virtualx/config/database.yml.example /var/www/virtualx/config/database.yml \
-	&& sed -i -re 's/\r//g ; s/host:\s*localhost/host: db/g ; s/database:.*/database: virtx/ ; s/username:.*/username: virtx/ ; s/password:.*/password: virtx/;' /var/www/virtualx/config/database.yml	\
+	&& sed -i -re 's/\r//g ; s/host:\s*localhost/host: db/g ; s/database:.*/database: virtx/ ; s/username:.*/username: virtx/ ; s/password:.*/password: virtx/;' /var/www/virtualx/config/database.yml
 
 
 # -----------------------------------------------
