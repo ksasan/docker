@@ -98,12 +98,18 @@ RUN	cp /var/www/virtualx/config/database.yml.example /var/www/virtualx/config/da
 COPY virtxDbSetup.sh /tmp/virtxDbSetup.sh
 COPY apacheModPassenger.conf /tmp/apacheModPassenger.conf 
 COPY virtualx.conf  /etc/apache2/sites-available/virtualx.conf
+COPY wkhtmltox-0.12.4_linux-generic-amd64.tar /home/user/wkhtmltox.tar
 RUN cat /tmp/apacheModPassenger.conf >> /etc/apache2/apache2.conf
 SHELL	["/bin/bash", "-c"]
 RUN cd /var/www/virtualx				\
 	&& source /etc/profile.d/rvm.sh			\
 	&& gem install passenger			\
 	&& passenger-install-apache2-module --auto
+
+RUN cd /home/user					\
+	&& tar xf wkhtmltox.tar				\
+	&& rm wkhtmltox.tar				\
+	&& ln -s wkhtmltox/bin/wkhtmltopdf wkhtmltopdf 
 
 # -----------------------------------------------
 # Final touch
@@ -119,9 +125,5 @@ EXPOSE 80
 EXPOSE 22 
 
 CMD ["/usr/bin/supervisord"]
-
-
-
-
 
 

@@ -13,26 +13,28 @@ MAINTAINER Khelender Sasan "ksasan@gmail.com"
 # Setup other important components (WSGI related)
 # -----------------------------------------------
 COPY virtxDbSetup.sh /tmp/virtxDbSetup.sh
-COPY apacheModPassenger.conf /tmp/apacheModPassenger.conf 
+COPY apacheModPassenger.conf /tmp/apacheModPassenger.conf
 COPY virtualx.conf  /etc/apache2/sites-available/virtualx.conf
+COPY wkhtmltox-0.12.4_linux-generic-amd64.tar /home/user/wkhtmltox.tar
 RUN cat /tmp/apacheModPassenger.conf >> /etc/apache2/apache2.conf
-SHELL	["/bin/bash", "-c"]
-RUN cd /var/www/virtualx				\
-	&& source /etc/profile.d/rvm.sh			\
-	&& gem install passenger			\
-	&& passenger-install-apache2-module --auto
+SHELL   ["/bin/bash", "-c"]
+RUN cd /var/www/virtualx                                \
+        && source /etc/profile.d/rvm.sh                 \
+        && gem install passenger                        \
+        && passenger-install-apache2-module --auto
 
-# -----------------------------------------------
-# Content to be run after linkage to database 
-# -----------------------------------------------
-RUN sed -i -re 's/\r//g ; s/host:\s*localhost/host: db/g ; s/database:.*/database: virtx/ ; s/username:.*/username: virtx/ ; s/password:.*/password: virtx/;' /var/www/virtualx/config/database.yml	
+RUN cd /home/user                                       \
+        && tar xf wkhtmltox.tar                         \
+        && rm wkhtmltox.tar                             \
+        && ln -s wkhtmltox/bin/wkhtmltopdf wkhtmltopdf
 
 # -----------------------------------------------
 # Final touch
 # -----------------------------------------------
-RUN sudo chown -R www-data:www-data /var/www/virtualx	\
-	&& a2dissite 000-default.conf			\
-	&& a2ensite virtualx.conf
+RUN sudo chown -R www-data:www-data /var/www/virtualx   \
+        && a2dissite 000-default.conf                   \
+        && a2ensite virtualx.conf
+
 
 # ---------------------------------------------------------------------------
 # Ports setup
