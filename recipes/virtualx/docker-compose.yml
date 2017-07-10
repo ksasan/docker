@@ -1,5 +1,6 @@
 virtx:
     container_name: virtx
+    #image: sasan/virtualx:v2
     build: .
     ports:
         - 8888:80
@@ -15,9 +16,9 @@ mysql:
         - /var/lib/mysql
     environment:
         MYSQL_ROOT_PASSWORD: toor
-        MYSQL_DATABASE: virtx
-        MYSQL_USER: virtx
-        MYSQL_PASSWORD: virtx
+#        MYSQL_DATABASE: virtx
+#        MYSQL_USER: virtx
+#        MYSQL_PASSWORD: virtx
 
 phpmyadmin:
     container_name: phpmyadmin

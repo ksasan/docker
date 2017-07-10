@@ -11,20 +11,16 @@ ARG username=user
 ARG passwd=pass
 ARG virtx=virtx
 ARG dbHost=db
-ENV username=$username
-ENV passwd=$passwd
-ENV virtx=$virtx
-ENV dbHost=$dbHost
-
-RUN export LANGUAGE=en_US.UTF-8         \
-        && export LANG=en_US.UTF-8      \
-        && export LC_ALL=en_US.UTF-8
+ENV username=$username		\
+	passwd=$passwd		\
+	virtx=$virtx		\
+	dbHost=$dbHost
 
 # ---------------------------------------------------------------------------
 #  Handle old releases of Linux 
 # ---------------------------------------------------------------------------
-RUN sudo echo "deb http://cz.archive.ubuntu.com/ubuntu precise main universe" >> /etc/apt/sources.list
-RUN sudo sed -i -re 's/([a-z]{2}\.)?archive.ubuntu.com|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list
+RUN sudo echo "deb http://cz.archive.ubuntu.com/ubuntu precise main universe" >> /etc/apt/sources.list		\
+	&& sudo sed -i -re 's/([a-z]{2}\.)?archive.ubuntu.com|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list
 
 # ---------------------------------------------------------------------------
 # Prepare for running in daemon mode
@@ -68,19 +64,43 @@ RUN cd /var/www			\
 # Ruby related setup
 # --------------------
 RUN curl -L https://get.rvm.io | bash -s stable --autolibs=enabled
-#RUN source /etc/profile.d/rvm.sh		\
-#	&& rvm install ruby-1.8.7		\
-#	&& rvm use ruby-1.8.7 --default 	\
-#	&& cd /var/www/virtualx			\
-#	&& gem install gemset			\
-#	&& gem install bundle			\
-#	&& bundle install			\
-#	&& gem install rails --version 3.0.3	\
-#	&& cp /var/www/virtualx/config/database.yml.example /var/www/virtualx/config/database.yml \
-#	&& sed -i -re 's/\r//g ; s/host:\s*localhost/host: db/g ; s/database:.*/database: virtx/ ; s/username:.*/username: virtx/ ; s/passwd:.*/passwd: virtx/;' config/database.yml 
 
-RUN sudo service apache2 restart
+# --------------------
+# Ruby related setup
+# --------------------
+SHELL	["/bin/bash", "-c"]
+WORKDIR /var/www/virtualx
+RUN export LANGUAGE=en_US.UTF-8         	\
+        && export LANG=en_US.UTF-8      	\
+        && export LC_ALL=en_US.UTF-8		\
+	&& source /etc/profile.d/rvm.sh		\
+	&& rvm install ruby-1.8.7		\
+	&& rvm use ruby-1.8.7 --default 	\
+	&& gem install gemset			\
+	&& gem install bundle			\
+	&& bundle install
 
+RUN gem install rails --version 3.0.3
+
+WORKDIR /
+ADD ./mysql.sh /opt/mysql.sh  
+
+# -----------------------------------------------
+# Content to be run after linkage to database 
+# -----------------------------------------------
+SHELL	["/bin/bash", "-c"]
+RUN	cp /var/www/virtualx/config/database.yml.example /var/www/virtualx/config/database.yml \
+	&& sed -i -re 's/\r//g ; s/host:\s*localhost/host: db/g ; s/database:.*/database: virtx/ ; s/username:.*/username: virtx/ ; s/password:.*/password: virtx/;' /var/www/virtualx/config/database.yml	\
+
+
+# -----------------------------------------------
+# Setup other important components (WSGI related)
+# -----------------------------------------------
+COPY virtxDbSetup.sh /tmp/virtxDbSetup.sh
+COPY apacheModPassenger.conf /tmp/apacheModPassenger.conf 
+RUN gem install passenger		\
+	&& passenger-install-apache2-module --auto	\
+	&& cat /tmp/apacheModPassenger.conf >> /etc/apache2/apache2.conf
 
 # ---------------------------------------------------------------------------
 # Ports setup
@@ -89,7 +109,3 @@ EXPOSE 80
 EXPOSE 22 
 
 CMD ["/usr/bin/supervisord"]
-
-# -------------------------------------------------------------------------------
-# Junk  / to be discarded
-# -------------------------------------------------------------------------------
