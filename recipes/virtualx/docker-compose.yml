@@ -1,7 +1,7 @@
 virtx:
     container_name: virtx
-    #image: sasan/virtualx:v2
-    build: .
+    image: sasan/virtualx:v3
+    #build: .
     ports:
         - 8888:80
     links:

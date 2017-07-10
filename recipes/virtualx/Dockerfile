@@ -97,12 +97,20 @@ RUN	cp /var/www/virtualx/config/database.yml.example /var/www/virtualx/config/da
 # -----------------------------------------------
 COPY virtxDbSetup.sh /tmp/virtxDbSetup.sh
 COPY apacheModPassenger.conf /tmp/apacheModPassenger.conf 
+COPY virtualx.conf  /etc/apache2/sites-available/virtualx.conf
 RUN cat /tmp/apacheModPassenger.conf >> /etc/apache2/apache2.conf
 SHELL	["/bin/bash", "-c"]
 RUN cd /var/www/virtualx				\
 	&& source /etc/profile.d/rvm.sh			\
 	&& gem install passenger			\
 	&& passenger-install-apache2-module --auto
+
+# -----------------------------------------------
+# Final touch
+# -----------------------------------------------
+RUN sudo chown -R www-data:www-data /var/www/virtualx	\
+	&& a2dissite 000-default.conf			\
+	&& a2ensite virtualx.conf
 
 # ---------------------------------------------------------------------------
 # Ports setup
