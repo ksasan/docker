@@ -92,15 +92,17 @@ SHELL	["/bin/bash", "-c"]
 RUN	cp /var/www/virtualx/config/database.yml.example /var/www/virtualx/config/database.yml \
 	&& sed -i -re 's/\r//g ; s/host:\s*localhost/host: db/g ; s/database:.*/database: virtx/ ; s/username:.*/username: virtx/ ; s/password:.*/password: virtx/;' /var/www/virtualx/config/database.yml
 
-
 # -----------------------------------------------
 # Setup other important components (WSGI related)
 # -----------------------------------------------
 COPY virtxDbSetup.sh /tmp/virtxDbSetup.sh
 COPY apacheModPassenger.conf /tmp/apacheModPassenger.conf 
-RUN gem install passenger		\
-	&& passenger-install-apache2-module --auto	\
-	&& cat /tmp/apacheModPassenger.conf >> /etc/apache2/apache2.conf
+RUN cat /tmp/apacheModPassenger.conf >> /etc/apache2/apache2.conf
+SHELL	["/bin/bash", "-c"]
+RUN cd /var/www/virtualx				\
+	&& source /etc/profile.d/rvm.sh			\
+	&& gem install passenger			\
+	&& passenger-install-apache2-module --auto
 
 # ---------------------------------------------------------------------------
 # Ports setup
@@ -109,3 +111,9 @@ EXPOSE 80
 EXPOSE 22 
 
 CMD ["/usr/bin/supervisord"]
+
+
+
+
+
+
